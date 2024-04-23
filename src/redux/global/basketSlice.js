@@ -1,40 +1,45 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-  carts: [],
-  quantity: 0
-};
 
 export const basketSlice = createSlice({
-  name: 'user',
-  initialState: initialState,
+  name: 'basket',
+  initialState: {
+    carts: [],
+    quantity: 0,
+  },
   reducers: {
     addToBasket: (state, action) => {
       const { id, name, price, imageUrl, quantity } = action.payload;
       const existingItem = state.carts.find(item => item.id === id);
       if (existingItem) {
         existingItem.quantity += quantity;
+        existingItem.totalPrice = existingItem.quantity * existingItem.price; // totalPrice'i güncelle
       } else {
-        state.carts.push({ id, name, price, imageUrl, quantity });
+        const totalPrice = price * quantity; // Fiyatı hesapla
+        state.carts.push({ id, name, price, imageUrl, quantity, totalPrice }); // totalPrice'i ekle
       }
     },
+    
 
     incrementQuantity: (state, action) => { 
       const { id } = action.payload;
-      const itemIndex = state.carts.findIndex(item => item.id === id);
-      if (itemIndex !== -1) {
-        state.carts[itemIndex].quantity += 1;
-        state.carts[itemIndex].totalPrice = state.carts[itemIndex].quantity * state.carts[itemIndex].price; // Ürün miktarını güncellerken toplam fiyatı güncelle
-      }
-    }, 
-    decrementQuantity: (state, action) => {
-      const { id } = action.payload;
-      const itemIndex = state.carts.findIndex(item => item.id === id);
-      if (itemIndex !== -1 && state.carts[itemIndex].quantity > 0) {
-        state.carts[itemIndex].quantity -= 1;
-        state.carts[itemIndex].totalPrice = state.carts[itemIndex].quantity * state.carts[itemIndex].price; // Ürün miktarını güncellerken toplam fiyatı güncelle
+      const item = state.carts.find(item => item.id === id);
+      if (item) {
+        item.quantity += 1;
+        item.totalPrice = item.quantity * item.price; 
       }
     },
+    
+    
+    decrementQuantity: (state, action) => {
+      const { id } = action.payload;
+      const item = state.carts.find(item => item.id === id);
+      if (item && item.quantity > 0) {
+        item.quantity -= 1;
+        item.totalPrice = item.quantity * item.price; 
+      }
+    },
+    
     removeFromBasket: (state, action) => {
       const { id } = action.payload;
       state.carts = state.carts.filter(item => item.id !== id);

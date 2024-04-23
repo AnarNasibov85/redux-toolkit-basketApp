@@ -1,9 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import basketReducer from './global/basketSlice'; // basketSlice.reducer olarak değiştirin
+
+import basketSlice from './global/basketSlice';
 
 const store = configureStore({
   reducer: {
-    user: basketReducer,
+    basket: basketSlice,
   },
 });
 
